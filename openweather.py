@@ -1,6 +1,7 @@
 import requests
+from datetime import datetime, timedelta, timezone
 
-API_KEY = "openweathermap api key here"
+API_KEY = "OpenWeatherMap API key here"
 LOCATION = "Los Angeles, CA, US"
 
 # Build query
@@ -26,9 +27,16 @@ if data.get("cod") == 200:
     wind_mph = wind_mps * 2.23694
     #temp = data["main"]["temp"]
     #wind = data["wind"]["speed"]
+    
+    # Convert UTC time to local time
+    utc_dt = datetime.fromtimestamp(data["dt"], tz=timezone.utc)
+    timezone_offset = timedelta(seconds=data["timezone"])
+    local_dt = utc_dt + timezone_offset
+    formatted_time = local_dt.strftime("%Y-%m-%d %H:%M:%S")
 
     print(f"📍 {location}")
     print(f"🗺️  Geo coords: {data['coord']['lat']}, {data['coord']['lon']}")
+    print(f"🕒 Local time: {formatted_time}")
     print(f"🌡️  Temp: {temp_c:.2f}°C / {temp_f:.2f}°F")
     print(f"🌥️  Conditions: {weather}")
     print(f"🌬️  Wind: {wind_mps:.2f} m/s / {wind_mph:.2f} mph")
